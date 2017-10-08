@@ -1,5 +1,14 @@
+.PHONY: init dev-install install test doctest check coverage\
+api-docs gen-api-docs docs
+
 init:
 	pip install -r requirements.txt
+
+dev-install:
+	pip install -e .
+
+install:
+	pip install .
 
 test:
 	py.test tests/ --doctest-modules matchpy/ README.rst docs/example.rst
@@ -13,12 +22,11 @@ check:
 coverage:
 	py.test --cov=matchpy --cov-report html --cov-report term tests/
 
-api-docs:
-	rmdir docs/api
-	sphinx-apidoc -n -e -T -o docs/api matchpy
-	make docs
+api-docs: | gen-api-docs docs
+
+gen-api-docs:
+	rm -rf docs/api
+	sphinx-apidoc -e -T -o docs/api matchpy
 
 docs:
-	cd docs
-	make html
-	cd ..
+	cd docs && $(MAKE) html
